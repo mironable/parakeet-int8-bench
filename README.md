@@ -41,7 +41,7 @@ What the numbers show:
 - Int8 runs at about half the real-time factor of ONNX fp32 (2.06x to 2.10x faster). Median latency on LibriSpeech drops from 788 ms (PyTorch) to 345 ms (ONNX fp32) to 163 ms (int8).
 - ONNX latency grows linearly with clip length, at about 55 to 60 ms per second of audio for fp32 and 27 to 30 ms for int8, so p95 reflects the longest clips. PyTorch takes about 700 ms per call even on clips under 3 seconds, then only about 25 ms more per second of audio. On LibriSpeech and EdAcc that makes it 4.0x to 5.3x slower than ONNX fp32 on clips under 3 seconds and about as fast on clips over 20 seconds.
 - PyTorch latency was not stable within a run. Partway through, the PyTorch process got about 300 ms slower per call and stayed that way. In the benchmark run this had happened by the time FLEURS started, so the FLEURS PyTorch row was measured entirely in the slower state; in a FLEURS-only rerun it happened after about 200 clips. Transcripts were identical in both runs, and the ONNX runs show no such step.
-- Int8 weights are 2.7x smaller (892 MB vs 2432 MB). The ratio stays below 4x because 292 MB of encoder weights stay fp32, including the convolution modules. Peak memory falls from 3070 MB to 1886 MB, and load time from 5.1 s to 1.1 s.
+- Int8 weights are 2.7x smaller (892 MB vs 2432 MB). The ratio stays below 4x because 337 MB of weights stay fp32: 292 MB in the encoder, mostly the convolution modules, and 45 MB in the decoder's embedding and LSTM. Peak memory falls from 3070 MB to 1886 MB, and load time from 5.1 s to 1.1 s.
 - On EdAcc, no first-language group with at least 20 clips gets more than 0.2 points worse. Catalan is the only group whose WER rises (+0.18). The groups have only 28 to 85 clips each, so these differences are too small to rank accents by quantization sensitivity.
 
 Typical int8 changes are word boundaries and spellings of rare words:
@@ -64,6 +64,8 @@ The last row counts as three errors even though the words are correct, because t
 | `src/parakeet_onnx/decode.py` | Greedy TDT decoding over the token and duration heads, mirroring NeMo's `GreedyTDTInfer`, including its two guards against getting stuck on a frame. |
 | `src/parakeet_onnx/model.py` | The runtime: features, ONNX encoder, then the decoder/joint loop. No PyTorch or NeMo import. |
 | `src/parakeet_onnx/export.py` | NeMo to ONNX: the encoder plus a fused decoder/joint graph. The fp32 encoder is over protobuf's 2 GB limit, so its weights go in one external `.data` file. |
+| `src/parakeet_onnx/evaluation.py` | Audio loading, manifests, text normalization and WER for the scripts. Uses the dev dependencies. |
+| `src/parakeet_onnx/reference.py` | The PyTorch baseline: the same checkpoint run through NeMo with per-utterance greedy TDT decoding. Used by `bench.py` and `check.py`. |
 | `scripts/quantize.py` | Dynamic int8 via ONNX Runtime: MatMul/Gemm weights only, one scale per output channel. Attention score MatMuls (two activations), the convolution modules and the front end stay fp32. |
 | `scripts/prepare_data.py` | Downloads the test sets and writes 16 kHz manifests. |
 | `scripts/bench.py` | Transcribes every clip with one variant at batch size 1 and logs per-clip timings. |
@@ -89,7 +91,7 @@ Needs Python 3.11.4 or newer (pass another interpreter with `PYTHON=...`) and ab
 make setup      # virtualenv with NeMo, ONNX Runtime and the eval tools
 make export     # downloads the checkpoint (2.4 GB) and writes models/fp32 and models/assets
 make quantize   # writes models/int8
-make data       # about 1.5 GB of test audio
+make data       # about 2.5 GB on disk: 1.3 GB of archives and 1.3 GB of extracted audio
 make check      # NumPy/ONNX path against NeMo on real clips; must end with OK
 make bench      # PyTorch fp32, ONNX fp32 and ONNX int8, batch size 1, 4 threads
 make report     # results/results.md and results/summary.json

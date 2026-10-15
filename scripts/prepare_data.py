@@ -28,6 +28,9 @@ LIBRISPEECH_URLS = [
     "https://www.openslr.org/resources/12/test-clean.tar.gz",
     "https://us.openslr.org/resources/12/test-clean.tar.gz",
 ]
+# Hugging Face commits the published results used, so later uploads can't change the sampled clips.
+EDACC_REVISION = "d9ae7bd344f0562b766ec93ee5ce8f2f9568ce66"
+FLEURS_REVISION = "70bb2e84b976b7e960aa89f1c648e09c59f894dd"
 
 
 def _download(urls: list[str], dst: Path) -> Path:
@@ -74,8 +77,11 @@ def edacc(root: Path) -> list[Clip]:
     from huggingface_hub import HfApi, hf_hub_download
 
     repo = "edinburghcstr/edacc"
-    shard = sorted(f for f in HfApi().list_repo_files(repo, repo_type="dataset") if f.startswith("data/test-"))[0]
-    parquet = hf_hub_download(repo, shard, repo_type="dataset", cache_dir=str(root / "downloads" / "hf"))
+    files = HfApi().list_repo_files(repo, repo_type="dataset", revision=EDACC_REVISION)
+    shard = sorted(f for f in files if f.startswith("data/test-"))[0]
+    parquet = hf_hub_download(
+        repo, shard, repo_type="dataset", revision=EDACC_REVISION, cache_dir=str(root / "downloads" / "hf")
+    )
     out_dir = root / "edacc" / "wav"
     out_dir.mkdir(parents=True, exist_ok=True)
     table = pq.read_table(parquet, columns=["speaker", "text", "accent", "l1", "audio"])
@@ -101,8 +107,10 @@ def fleurs_de(root: Path) -> list[Clip]:
     from huggingface_hub import hf_hub_download
 
     repo, cache = "google/fleurs", str(root / "downloads" / "hf")
-    tsv = hf_hub_download(repo, "data/de_de/test.tsv", repo_type="dataset", cache_dir=cache)
-    tar_path = hf_hub_download(repo, "data/de_de/audio/test.tar.gz", repo_type="dataset", cache_dir=cache)
+    tsv = hf_hub_download(repo, "data/de_de/test.tsv", repo_type="dataset", revision=FLEURS_REVISION, cache_dir=cache)
+    tar_path = hf_hub_download(
+        repo, "data/de_de/audio/test.tar.gz", repo_type="dataset", revision=FLEURS_REVISION, cache_dir=cache
+    )
     out_dir = root / "fleurs_de" / "wav"
     if not out_dir.exists():
         out_dir.mkdir(parents=True)
