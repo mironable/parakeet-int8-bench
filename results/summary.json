@@ -1,0 +1,156 @@
+{
+  "runs": {
+    "torch": {
+      "variant": "torch",
+      "model": "nvidia/parakeet-tdt-0.6b-v3",
+      "threads": 4,
+      "load_s": 19.87,
+      "peak_rss_mb": 5412.7,
+      "model_size_mb": null,
+      "machine": {
+        "platform": "macOS-27.0.1-arm64-arm-64bit",
+        "machine": "arm64",
+        "python": "3.12.4",
+        "cpu": "Apple M1 Pro",
+        "memory_gb": 16.0,
+        "onnxruntime": "1.31.0",
+        "torch": "2.14.1",
+        "nemo_toolkit": "3.0.0",
+        "numpy": "2.5.4"
+      }
+    },
+    "onnx-fp32": {
+      "variant": "onnx-fp32",
+      "model": "nvidia/parakeet-tdt-0.6b-v3",
+      "threads": 4,
+      "load_s": 5.1,
+      "peak_rss_mb": 3070.1,
+      "model_size_mb": 2431.6,
+      "machine": {
+        "platform": "macOS-27.0.1-arm64-arm-64bit",
+        "machine": "arm64",
+        "python": "3.12.4",
+        "cpu": "Apple M1 Pro",
+        "memory_gb": 16.0,
+        "onnxruntime": "1.31.0",
+        "torch": "2.14.1",
+        "nemo_toolkit": "3.0.0",
+        "numpy": "2.5.4"
+      }
+    },
+    "onnx-int8": {
+      "variant": "onnx-int8",
+      "model": "nvidia/parakeet-tdt-0.6b-v3",
+      "threads": 4,
+      "load_s": 1.08,
+      "peak_rss_mb": 1885.5,
+      "model_size_mb": 891.9,
+      "machine": {
+        "platform": "macOS-27.0.1-arm64-arm-64bit",
+        "machine": "arm64",
+        "python": "3.12.4",
+        "cpu": "Apple M1 Pro",
+        "memory_gb": 16.0,
+        "onnxruntime": "1.31.0",
+        "torch": "2.14.1",
+        "nemo_toolkit": "3.0.0",
+        "numpy": "2.5.4"
+      }
+    }
+  },
+  "datasets": {
+    "edacc": {
+      "clips": 300,
+      "audio_h": 0.564,
+      "variants": {
+        "torch": {
+          "wer": 14.82,
+          "p50_ms": 765.3,
+          "p95_ms": 1197.0,
+          "rtf": 0.1218,
+          "encoder_share": 0.907
+        },
+        "onnx-fp32": {
+          "wer": 14.82,
+          "p50_ms": 268.9,
+          "p95_ms": 1110.8,
+          "rtf": 0.0588,
+          "encoder_share": 0.92,
+          "identical_to_torch": 1.0,
+          "wer_vs_torch": 0.0
+        },
+        "onnx-int8": {
+          "wer": 14.73,
+          "p50_ms": 133.1,
+          "p95_ms": 542.1,
+          "rtf": 0.0286,
+          "encoder_share": 0.888,
+          "identical_to_onnx-fp32": 0.747,
+          "wer_vs_onnx-fp32": 1.64
+        }
+      }
+    },
+    "fleurs_de": {
+      "clips": 300,
+      "audio_h": 1.079,
+      "variants": {
+        "torch": {
+          "wer": 6.31,
+          "p50_ms": 1250.6,
+          "p95_ms": 1525.3,
+          "rtf": 0.0976,
+          "encoder_share": 0.904
+        },
+        "onnx-fp32": {
+          "wer": 6.31,
+          "p50_ms": 649.4,
+          "p95_ms": 1275.8,
+          "rtf": 0.0553,
+          "encoder_share": 0.932,
+          "identical_to_torch": 1.0,
+          "wer_vs_torch": 0.0
+        },
+        "onnx-int8": {
+          "wer": 6.42,
+          "p50_ms": 312.2,
+          "p95_ms": 613.9,
+          "rtf": 0.0267,
+          "encoder_share": 0.899,
+          "identical_to_onnx-fp32": 0.817,
+          "wer_vs_onnx-fp32": 0.94
+        }
+      }
+    },
+    "librispeech": {
+      "clips": 300,
+      "audio_h": 0.607,
+      "variants": {
+        "torch": {
+          "wer": 1.93,
+          "p50_ms": 787.7,
+          "p95_ms": 1069.9,
+          "rtf": 0.1119,
+          "encoder_share": 0.908
+        },
+        "onnx-fp32": {
+          "wer": 1.93,
+          "p50_ms": 344.8,
+          "p95_ms": 988.4,
+          "rtf": 0.0586,
+          "encoder_share": 0.925,
+          "identical_to_torch": 1.0,
+          "wer_vs_torch": 0.0
+        },
+        "onnx-int8": {
+          "wer": 1.93,
+          "p50_ms": 163.1,
+          "p95_ms": 468.8,
+          "rtf": 0.0279,
+          "encoder_share": 0.891,
+          "identical_to_onnx-fp32": 0.88,
+          "wer_vs_onnx-fp32": 0.27
+        }
+      }
+    }
+  }
+}

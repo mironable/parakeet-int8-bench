@@ -1,0 +1,15 @@
+# Export, benchmark and tests. The runtime itself only needs the dependencies in pyproject.toml.
+# Versions are the ones the parity tests were run with.
+nemo_toolkit[asr]==3.0.0
+onnx==1.23.2
+onnxruntime==1.31.0
+numpy>=2.0
+sentencepiece>=0.2
+soundfile>=0.12
+soxr>=0.5
+jiwer>=4.0
+whisper-normalizer>=0.1.12
+pyarrow>=17
+huggingface_hub>=0.34
+pytest>=8
+ruff>=0.15

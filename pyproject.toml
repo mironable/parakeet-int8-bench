@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "parakeet-onnx"
+version = "0.1.0"
+description = "Parakeet TDT on ONNX Runtime: int8 quantization and an accuracy/latency benchmark"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Mironas Bitinis" }]
+dependencies = [
+    "numpy>=1.24",
+    "onnxruntime>=1.18",
+    "sentencepiece>=0.2",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning", "ignore::UserWarning", "ignore::FutureWarning"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
